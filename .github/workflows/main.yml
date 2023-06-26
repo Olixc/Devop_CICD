@@ -15,7 +15,7 @@ jobs:
         run: docker pull olixc/apache-webapp
         
       - name: Run Docker Container
-        run: docker run -d -p 80:80 olixc/apache-webapp
+        run: docker run -d -p 8072:80 olixc/apache-webapp
         
   Deploy:
     needs: login
