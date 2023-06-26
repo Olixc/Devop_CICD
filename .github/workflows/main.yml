@@ -1,0 +1,35 @@
+name: Login to EC2 instance, pull image, and run container
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Pull Docker image
+        run: docker pull olixc/apache-webapp
+        
+      - name: Run Docker Container
+        run: docker run -d -p 80:80 olixc/apache-webapp
+        
+  Deploy:
+    needs: login
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2 
+      - name: Deploy to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+          HOSTNAME: ${{ secrets.AWS_EC2_INSTANCE_HOST  }}
+          USER_NAME: ${{ secrets.AWS_USERNAME  }}
+          
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
+            'docker pull olixc/apache-webapp && docker run -d -p 80:80 olixc/apache-webapp'
